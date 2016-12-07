@@ -12,5 +12,27 @@ case class Telephone(val number: String)
 case class ServiceOption(val id: String, val description: String)
 case class RegistrationData(val customerInformation: CustomerInformation, val contactInformation: ContactInformation, val serviceOption: ServiceOption)
 case class ProcessStep(val name: String, val processor: ActorRef)
+
+case class RegistrationProcess(val processId: String, val processSteps: Seq[ProcessStep], val currentStep: Int) {
+  def this(processId: String, processSteps: Seq[ProcessStep]) {
+    this(processId, processSteps, 0)
+  }
+
+  def isCompleted: Boolean = {
+    currentStep >= processSteps.size
+  }
+
+  def nextStep(): ProcessStep = {
+    if (isCompleted) {
+      throw new IllegalStateException("Process had already completed.")
+    }
+    processSteps(currentStep)
+  }
+
+  def stepCompleted(): RegistrationProcess = {
+    new RegistrationProcess(processId, processSteps, currentStep + 1)
+  }
+}
+
 object RoutingSlipDriver extends CompletableApp(4) {
 }
