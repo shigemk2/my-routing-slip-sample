@@ -34,5 +34,15 @@ case class RegistrationProcess(val processId: String, val processSteps: Seq[Proc
   }
 }
 
+case class RegisterCustomer(val registrationData: RegistrationData, val registrationProcess: RegistrationProcess) {
+  def advance(): Unit = {
+    val advancedProcess = registrationProcess.stepCompleted()
+    if (!advancedProcess.isCompleted) {
+      advancedProcess.nextStep().processor ! RegisterCustomer(registrationData, registrationProcess)
+    }
+    RoutingSlipDriver.completedStep()
+  }
+}
+
 object RoutingSlipDriver extends CompletableApp(4) {
 }
