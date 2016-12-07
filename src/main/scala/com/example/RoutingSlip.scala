@@ -68,4 +68,19 @@ class ServicePlanner extends Actor {
 }
 
 object ServiceRegistry {
+  def contactKeeper(system: ActorSystem, id: String) = {
+    system.actorOf(Props[ContactKeeper], "contactKeeper-" + id)
+  }
+
+  def creditChecker(system: ActorSystem, id: String) = {
+    system.actorOf(Props[CreditChecker], "creditChecker-" + id)
+  }
+
+  def customerVault(system: ActorSystem, id: String) = {
+    system.actorOf(Props[CustomerVault], "customerVault-" + id)
+  }
+
+  def servicePlanner(system: ActorSystem, id: String) = {
+    system.actorOf(Props[ServicePlanner], "servicePlanner-" + id)
+  }
 }
