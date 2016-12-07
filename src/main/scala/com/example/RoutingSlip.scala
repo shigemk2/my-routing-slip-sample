@@ -66,3 +66,6 @@ class ServicePlanner extends Actor {
   def receive: Unit = {
   }
 }
+
+object ServiceRegistry {
+}
