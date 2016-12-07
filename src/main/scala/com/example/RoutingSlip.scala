@@ -46,3 +46,23 @@ case class RegisterCustomer(val registrationData: RegistrationData, val registra
 
 object RoutingSlipDriver extends CompletableApp(4) {
 }
+
+class CreditChecker extends Actor {
+  def receive: Unit = {
+  }
+}
+
+class ContactKeeper extends Actor {
+  def receive: Unit = {
+  }
+}
+
+class CustomerVault extends Actor {
+  def receive: Unit = {
+  }
+}
+
+class ServicePlanner extends Actor {
+  def receive: Unit = {
+  }
+}
