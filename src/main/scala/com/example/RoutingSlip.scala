@@ -85,6 +85,13 @@ class CustomerVault extends Actor {
 
 class ServicePlanner extends Actor {
   def receive: Unit = {
+    case registerCustomer: RegisterCustomer =>
+      val serviceOption = registerCustomer.registrationData.serviceOption
+      println(s"ServicePlanner: handling register customer to plan a new customer service: $serviceOption")
+      registerCustomer.advance()
+      context.stop(self)
+    case message: Any =>
+      println(s"ServicePlanner: received unexpected message: $message")
   }
 }
 
