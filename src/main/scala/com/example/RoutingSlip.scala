@@ -45,6 +45,30 @@ case class RegisterCustomer(val registrationData: RegistrationData, val registra
 }
 
 object RoutingSlipDriver extends CompletableApp(4) {
+  val processId = java.util.UUID.randomUUID().toString
+
+  val step1 = ProcessStep("create_customer", ServiceRegistry.customerVault(system, processId))
+  val step2 = ProcessStep("set_up_contact_info", ServiceRegistry.contactKeeper(system, processId))
+  val step3 = ProcessStep("select_service_plan", ServiceRegistry.servicePlanner(system, processId))
+  val step4 = ProcessStep("check_credit", ServiceRegistry.creditChecker(system, processId))
+
+  val registrationProcess = new RegistrationProcess(processId, Vector(step1, step2, step3, step4))
+
+  val registrationData =
+    new RegistrationData(
+      CustomerInformation("ABC, Inc.", "123-45-6789"),
+      ContactInformation(
+        PostalAddress("123 Main Street", "suite 100", "Boulder", "CO", "80301"),
+        Telephone("555-103-5532")),
+      ServiceOption("99-1203", "A description of 315.")
+    )
+
+  val registerCustomer = RegisterCustomer(registrationData, registrationProcess)
+
+  registrationProcess.nextStep().processor ! registerCustomer
+
+  awaitCompletion
+  println("RoutingSlip: is completed.")
 }
 
 class CreditChecker extends Actor {
