@@ -61,6 +61,14 @@ class CreditChecker extends Actor {
 
 class ContactKeeper extends Actor {
   def receive: Unit = {
+    case registerCustomer: RegisterCustomer =>
+      val contactInfo = registerCustomer.registrationData.contactInformation
+      println(s"ContactKeeper: handling register customer to keep contact information: $contactInfo")
+      registerCustomer.advance()
+      context.stop(self)
+    case message: Any =>
+      println(s"ContactKeeper: received unexpected message: $message")
+  }
   }
 }
 
