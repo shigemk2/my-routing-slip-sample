@@ -69,7 +69,6 @@ class ContactKeeper extends Actor {
     case message: Any =>
       println(s"ContactKeeper: received unexpected message: $message")
   }
-  }
 }
 
 class CustomerVault extends Actor {
