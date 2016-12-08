@@ -49,6 +49,13 @@ object RoutingSlipDriver extends CompletableApp(4) {
 
 class CreditChecker extends Actor {
   def receive: Unit = {
+    case registerCustomer: RegisterCustomer =>
+      val federalTaxId = registerCustomer.registrationData.customerInformation.federalTaxId
+      println(s"CreditChecker: handling register customer to perform credit check: $federalTaxId")
+      registerCustomer.advance()
+      context.stop(self)
+    case message: Any =>
+      println(s"CreditChecker: received unexpected message: $message")
   }
 }
 
