@@ -35,10 +35,10 @@ case class RegistrationProcess(val processId: String, val processSteps: Seq[Proc
 }
 
 case class RegisterCustomer(val registrationData: RegistrationData, val registrationProcess: RegistrationProcess) {
-  def advance(): Unit = {
-    val advancedProcess = registrationProcess.stepCompleted()
+  def advance():Unit = {
+    val advancedProcess = registrationProcess.stepCompleted
     if (!advancedProcess.isCompleted) {
-      advancedProcess.nextStep().processor ! RegisterCustomer(registrationData, registrationProcess)
+      advancedProcess.nextStep().processor ! RegisterCustomer(registrationData, advancedProcess)
     }
     RoutingSlipDriver.completedStep()
   }
@@ -72,7 +72,7 @@ object RoutingSlipDriver extends CompletableApp(4) {
 }
 
 class CreditChecker extends Actor {
-  def receive: Unit = {
+  def receive: Receive = {
     case registerCustomer: RegisterCustomer =>
       val federalTaxId = registerCustomer.registrationData.customerInformation.federalTaxId
       println(s"CreditChecker: handling register customer to perform credit check: $federalTaxId")
@@ -84,7 +84,7 @@ class CreditChecker extends Actor {
 }
 
 class ContactKeeper extends Actor {
-  def receive: Unit = {
+  def receive: Receive = {
     case registerCustomer: RegisterCustomer =>
       val contactInfo = registerCustomer.registrationData.contactInformation
       println(s"ContactKeeper: handling register customer to keep contact information: $contactInfo")
@@ -96,7 +96,7 @@ class ContactKeeper extends Actor {
 }
 
 class CustomerVault extends Actor {
-  def receive: Unit = {
+  def receive: Receive = {
     case registerCustomer: RegisterCustomer =>
       val customerInformation = registerCustomer.registrationData.customerInformation
       println(s"CustomerVault: handling register customer to create a new customer: $customerInformation")
@@ -108,7 +108,7 @@ class CustomerVault extends Actor {
 }
 
 class ServicePlanner extends Actor {
-  def receive: Unit = {
+  def receive: Receive = {
     case registerCustomer: RegisterCustomer =>
       val serviceOption = registerCustomer.registrationData.serviceOption
       println(s"ServicePlanner: handling register customer to plan a new customer service: $serviceOption")
