@@ -2,7 +2,7 @@ package com.example
 
 import akka.actor._
 
-class CompletableApp(val steps:Int) extends App {
+class CompletableApp(steps:Int) extends App {
   val canComplete = new java.util.concurrent.CountDownLatch(1);
   val canStart = new java.util.concurrent.CountDownLatch(1);
   val completion = new java.util.concurrent.CountDownLatch(steps);

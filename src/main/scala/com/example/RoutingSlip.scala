@@ -2,18 +2,18 @@ package com.example
 
 import akka.actor._
 
-case class CustomerInformation(val name: String, val federalTaxId: String)
-case class ContactInformation(val postalAddress: PostalAddress, val telephone: Telephone)
+case class CustomerInformation(name: String, federalTaxId: String)
+case class ContactInformation(postalAddress: PostalAddress, telephone: Telephone)
 case class PostalAddress(
-                        val address1: String, val address2: String,
-                        val city: String, val state: String, val zipCode: String
+                        address1: String, address2: String,
+                        city: String, state: String, zipCode: String
                         )
-case class Telephone(val number: String)
-case class ServiceOption(val id: String, val description: String)
-case class RegistrationData(val customerInformation: CustomerInformation, val contactInformation: ContactInformation, val serviceOption: ServiceOption)
-case class ProcessStep(val name: String, val processor: ActorRef)
+case class Telephone(number: String)
+case class ServiceOption(id: String, description: String)
+case class RegistrationData(customerInformation: CustomerInformation, contactInformation: ContactInformation, serviceOption: ServiceOption)
+case class ProcessStep(name: String, processor: ActorRef)
 
-case class RegistrationProcess(val processId: String, val processSteps: Seq[ProcessStep], val currentStep: Int) {
+case class RegistrationProcess(processId: String, processSteps: Seq[ProcessStep], currentStep: Int) {
   def this(processId: String, processSteps: Seq[ProcessStep]) {
     this(processId, processSteps, 0)
   }
@@ -30,13 +30,13 @@ case class RegistrationProcess(val processId: String, val processSteps: Seq[Proc
   }
 
   def stepCompleted(): RegistrationProcess = {
-    new RegistrationProcess(processId, processSteps, currentStep + 1)
+    RegistrationProcess(processId, processSteps, currentStep + 1)
   }
 }
 
-case class RegisterCustomer(val registrationData: RegistrationData, val registrationProcess: RegistrationProcess) {
+case class RegisterCustomer(registrationData: RegistrationData, registrationProcess: RegistrationProcess) {
   def advance():Unit = {
-    val advancedProcess = registrationProcess.stepCompleted
+    val advancedProcess = registrationProcess.stepCompleted()
     if (!advancedProcess.isCompleted) {
       advancedProcess.nextStep().processor ! RegisterCustomer(registrationData, advancedProcess)
     }
@@ -55,7 +55,7 @@ object RoutingSlipDriver extends CompletableApp(4) {
   val registrationProcess = new RegistrationProcess(processId, Vector(step1, step2, step3, step4))
 
   val registrationData =
-    new RegistrationData(
+    RegistrationData(
       CustomerInformation("ABC, Inc.", "123-45-6789"),
       ContactInformation(
         PostalAddress("123 Main Street", "suite 100", "Boulder", "CO", "80301"),
